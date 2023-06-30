@@ -12,7 +12,10 @@ class Address(models.Model):
     country_iso_code = models.CharField(max_length=3, validators=[MinLengthValidator(3)])
 
     def __str__(self):
-        return f'{self.number} {self.street}'
+        return f"{self.number} {self.street}"
+
+    class Meta:
+        verbose_name_plural = "Addresses"
 
 
 class Letting(models.Model):
