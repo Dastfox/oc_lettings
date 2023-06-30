@@ -15,7 +15,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Migrate Profile data
         for old_profile in OldProfile.objects.all():
-            user = User.objects.get(id=old_profile.user.id)  # Fetching the associated user
+            user = User.objects.get(
+                id=old_profile.user.id
+            )  # Fetching the associated user
             new_profile = NewProfile.objects.create(
                 user=user,
                 favorite_city=old_profile.favorite_city,

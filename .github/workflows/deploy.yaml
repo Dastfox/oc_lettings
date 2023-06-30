@@ -1,0 +1,39 @@
+name: Deploy to Production
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: 3.x
+
+            - name: Install dependencies
+              run: pip install -r requirements.txt
+
+            - name: Run linting and tests
+              run: |
+                  black .
+                  python manage.py test
+
+            - name: Build and tag Docker image
+              run: docker build -t your-image-name .
+
+            - name: Log in to Docker registry
+              run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Push Docker image
+              run: docker push your-image-name
+
+            - name: Deploy to production
+              run: your-deployment-command-here
