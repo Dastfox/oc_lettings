@@ -6,6 +6,7 @@ for /f %%I in ('git rev-parse --short HEAD') do set "commit_hash=%%I"
 REM Run linting with Black
 black .
 
+
 REM Check if the image exists before destroying it
 docker inspect dastfox/oc_lettings:%commit_hash% >nul 2>&1
 if %errorlevel% equ 0 (
@@ -28,5 +29,8 @@ if %errorlevel% equ 0 (
 REM Run the site locally using the tagged image with a custom container name
 docker run -p 8000:8000 --name oc_lettings_container dastfox/oc_lettings:%commit_hash%
 
+
 REM Run the tests in the new container
 docker exec oc_lettings_container python manage.py test
+
+

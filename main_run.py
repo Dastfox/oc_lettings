@@ -3,6 +3,7 @@ import os
 print("Enter your OS please ([WINDOWS], Linux, Mac):")
 user_os = input().lower()
 
+
 if not user_os:
     user_os = "windows"
 
