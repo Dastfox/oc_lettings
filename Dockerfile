@@ -1,5 +1,5 @@
 # Utilisez une image de base appropriée pour votre projet Django
-FROM python:3.10
+FROM python:3.11
 
 # Définition du répertoire de travail dans le conteneur
 WORKDIR /Python-OC-Lettings-FR
