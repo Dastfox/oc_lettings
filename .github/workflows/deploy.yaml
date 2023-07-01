@@ -48,5 +48,16 @@ jobs:
             - name: Push Docker image
               run: docker push ${{ secrets.DOCKER_USERNAME }}/oc_lettings:${{ steps.commit_hash.outputs.hash }}
 
-            - name: Deploy to production
-              run: your-deployment-command-here
+            - name: Log in to Azure
+              uses: azure/login@v1
+              with:
+                  creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+            - name: Deploy Docker container to Azure Container Instances
+              uses: azure/aci-deploy@v1
+              with:
+                  resource-group: 'ocLettings'
+                  dns-name-label: 'oc-lettings'
+                  image: ${{ secrets.DOCKER_USERNAME }}/oc_lettings:${{ steps.commit_hash.outputs.hash }}
+                  name: 'oc-lettings'
+                  location: 'France'
