@@ -1,0 +1,100 @@
+name: CI/CD Pipeline
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: 3.11
+
+            - name: Create and activate virtual environment
+              run: |
+                  python -m venv venv
+                  source venv/bin/activate
+
+            - name: Install dependencies
+              run: pip install -r requirements.txt
+
+            - name: Run linting
+              run: |
+                  flake8 --exclude=venv,management,migrations
+                  black .
+
+            - name: Run tests
+              run: python manage.py test
+
+    build:
+        needs: check
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: 3.11
+
+            - name: Create and activate virtual environment
+              run: |
+                  python -m venv venv
+                  source venv/bin/activate
+
+            - name: Install dependencies
+              run: pip install -r requirements.txt
+
+            - name: Log directory contents
+              run: ls
+
+            - name: Get commit hash
+              id: commit_hash
+              run: echo "::set-output name=hash::$(git rev-parse --short HEAD)"
+
+            - name: Build and tag Docker image
+              run: docker build -t ${{ secrets.DOCKER_USERNAME }}/oc_lettings:${{ steps.commit_hash.outputs.hash }} .
+
+            - name: Log in to Docker registry
+              run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin
+              env:
+                  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+                  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Push Docker image to registry
+              run: docker push ${{ secrets.DOCKER_USERNAME }}/oc_lettings:${{ steps.commit_hash.outputs.hash }}
+
+            - name: Log in to Heroku
+              run: echo $HEROKU_API_KEY | docker login --username=${{secrets.HEROKU_USERNAME}} --password-stdin registry.heroku.com
+              env:
+                  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+            - name: Push Docker image to Heroku registry
+              run: |
+                  docker tag ${{ secrets.DOCKER_USERNAME }}/oc_lettings:${{ steps.commit_hash.outputs.hash }} registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+                  docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+
+            - name: Run 'ls' command inside Heroku container
+              run: |
+                  docker run --rm registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web ls
+
+            - name: Build, Push and Release a Docker container to Heroku
+              uses: gonuit/heroku-docker-deploy@v1.3.3
+              with:
+                  email: ${{ secrets.HEROKU_USERNAME }}
+                  heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+                  heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+                  dockerfile_directory: ./
+                  dockerfile_name: Dockerfile
+                  docker_options: '--no-cache'
+                  process_type: web
