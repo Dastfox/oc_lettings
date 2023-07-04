@@ -6,7 +6,7 @@ on:
             - main
 
 jobs:
-    check:
+    linting-and-tests:
         runs-on: ubuntu-latest
 
         steps:
@@ -35,7 +35,7 @@ jobs:
               run: python manage.py test
 
     build:
-        needs: check
+        needs: linting-and-tests
         runs-on: ubuntu-latest
 
         steps:
@@ -83,10 +83,6 @@ jobs:
               run: |
                   docker tag ${{ secrets.DOCKER_USERNAME }}/oc_lettings:${{ steps.commit_hash.outputs.hash }} registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
                   docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
-
-            - name: Run 'ls' command inside Heroku container
-              run: |
-                  docker run --rm registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web ls
 
             - name: Build, Push and Release a Docker container to Heroku
               uses: gonuit/heroku-docker-deploy@v1.3.3

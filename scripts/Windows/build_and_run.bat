@@ -16,7 +16,7 @@ if %errorlevel% equ 0 (
 
 
 REM Build and tag the Docker image
-docker build -t dastfox/oc_lettings:%commit_hash% --label commit_hash=%commit_hash% .
+docker build -t dastfox/oc_lettings:%commit_hash% --label commit_hash=%commit_hash% --build-arg PORT=8000 .
 
 
 REM Check if the container exists before removing it
@@ -28,9 +28,3 @@ if %errorlevel% equ 0 (
 
 REM Run the site locally using the tagged image with a custom container name
 docker run -p 8000:8000 --name oc_lettings_container dastfox/oc_lettings:%commit_hash%
-
-
-REM Run the tests in the new container
-docker exec oc_lettings_container python manage.py test
-
-
