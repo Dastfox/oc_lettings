@@ -1,10 +1,12 @@
+# OCLETTINGS
+
 ## Résumé
 
 Site web d'Orange County Lettings
 
 ## Développement local
 
-### Prérequis
+### Prérequis Développement local
 
 - Compte GitHub avec accès en lecture à ce repository
 - Git CLI
@@ -27,7 +29,7 @@ Dans le reste de la documentation sur le développement local, il est supposé q
 - `apt-get install python3-venv` (Si l'étape précédente comporte des erreurs avec un paquet non trouvé sur Ubuntu)
 - Activer l'environnement `source venv/bin/activate`
 - Confirmer que la commande `python` exécute l'interpréteur Python dans l'environnement virtuel
-`which python`
+  `which python`
 - Confirmer que la version de l'interpréteur Python est la version 3.6 ou supérieure `python --version`
 - Confirmer que la commande `pip` exécute l'exécutable pip dans l'environnement virtuel, `which pip`
 - Pour désactiver l'environnement, `deactivate`
@@ -61,7 +63,7 @@ Dans le reste de la documentation sur le développement local, il est supposé q
 - Afficher les tables dans la base de données `.tables`
 - Afficher les colonnes dans le tableau des profils, `pragma table_info(Python-OC-Lettings-FR_profile);`
 - Lancer une requête sur la table des profils, `select user_id, favorite_city from
-  Python-OC-Lettings-FR_profile where favorite_city like 'B%';`
+Python-OC-Lettings-FR_profile where favorite_city like 'B%';`
 - `.quit` pour quitter
 
 #### Panel d'administration
@@ -73,5 +75,60 @@ Dans le reste de la documentation sur le développement local, il est supposé q
 
 Utilisation de PowerShell, comme ci-dessus sauf :
 
-- Pour activer l'environnement virtuel, `.\venv\Scripts\Activate.ps1` 
+- Pour activer l'environnement virtuel, `.\venv\Scripts\Activate.ps1`
 - Remplacer `which <my-command>` par `(Get-Command <my-command>).Path`
+
+## Contenerisation locale
+
+### Prérequis Contenerisation
+
+- Docker CLI
+- Docker Desktop
+
+### Exécuter le site sur docker
+
+assurez vous d'avoir bien cloné le repository et d'être dans le dossier du projet et d'avoir votre environnement virtuel activé
+
+```bash
+python run_locally.py
+```
+
+## Déploiment
+
+### Prérequis Déploiment
+
+- Compte Heroku
+- Compte Docker Hub
+
+### Déploiment sur Heroku
+
+- Dans votre repo github, aller dans `Settings` > `Secrets` > `New repository secret` et ajouter les ID suivants:
+  DOCKER_PASSWORD
+
+- votre mot de passe docker hub
+  DOCKER_USERNAME
+
+- votre nom d'utilisateur docker hub
+  HEROKU_API_KEY
+
+- Aller sur `https://dashboard.heroku.com/account` et récupérer votre clé API
+
+![alt text](https://ibb.co/HPzvkMS)
+
+HEROKU_APP_NAME
+
+- Aller sur `https://dashboard.heroku.com/apps` et récupérer le nom de votre application
+
+HEROKU_USERNAME
+
+- votre nom d'utilisateur heroku (votre e-mail si non modifié)
+
+SENTRY_DSN
+
+- Aller sur `https://sentry.io/` et créer un nouveau projet, récupérer votre DSN
+
+- dans le fichier .env ajouter les variables suivantes:
+  SECRET_KEY = dans l'environement du repo
+  DJANGO_SETTINGS_MODULE=oc_lettings_site.settings.local
+  PORT=8000
+  SENTRY_DSN votre DSN sentry récupéré précédemment
