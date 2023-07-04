@@ -12,6 +12,8 @@ ENV PORT=8000
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV DJANGO_SETTINGS_MODULE=oc_lettings_site.settings
+ENV SECRET_KEY = $SECRET_KEY
+ENV SENTRY_DSN = $SENTRY_DSN
 
 # Installez les dépendances de votre projet
 RUN pip install --upgrade pip \

@@ -102,6 +102,10 @@ python run_locally.py
 
 ### Déploiment sur Heroku
 
+```bash
+$heroku create <nom-de-votre-appli>
+```
+
 - Dans votre repo github, aller dans `Settings` > `Secrets` > `New repository secret` et ajouter les ID suivants:
   DOCKER_PASSWORD
 
@@ -117,7 +121,7 @@ python run_locally.py
 
 HEROKU_APP_NAME
 
-- Aller sur `https://dashboard.heroku.com/apps` et récupérer le nom de votre application
+- nom de votre appli
 
 HEROKU_USERNAME
 
@@ -128,7 +132,13 @@ SENTRY_DSN
 - Aller sur `https://sentry.io/` et créer un nouveau projet, récupérer votre DSN
 
 - dans le fichier .env ajouter les variables suivantes:
-  SECRET_KEY = dans l'environement du repo
-  DJANGO_SETTINGS_MODULE=oc_lettings_site.settings.local
+  SECRET_KEY = la demander à un membre de l'équipe
   PORT=8000
   SENTRY_DSN votre DSN sentry récupéré précédemment
+
+- Définir les variables d'environement sur heroku
+
+```bash
+$heroku config:set "SECRET_KEY=%yourDjangoSecretKey%" --app %YourAppName%
+$heroku config:set "SENTRY_DSN=%yourSentryDSN%" --app %YourAppName%
+```
