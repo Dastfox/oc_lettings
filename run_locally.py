@@ -1,43 +1,35 @@
 import os
 
-print("Enter your OS please ([WINDOWS], Linux, Mac):")
-user_os = None
+
+def get_user_os():
+    while True:
+        user_os = input("Enter your OS please ([WINDOWS], Linux, Mac): ").lower()
+        if user_os.startswith("win") or user_os == (""):
+            return "CMD"
+        elif user_os.startswith("lin") or user_os.startswith("mac"):
+            return "BASH"
 
 
-def check_os():
-    user_os = input().lower()
-    if user_os.startswith("win"):
-        return "windows"
-    elif user_os.startswith("lin"):
-        return "linux"
-    elif user_os.startswith("mac"):
-        return "mac"
-    elif user_os.startswith(""):
-        return "windows"
-    else:
-        return False
+def get_user_image():
+    while True:
+        user_image = input("Old image or new image? ([BUILD], pull): ").lower()
+        if user_image.startswith("b") or user_image == (""):
+            return "build"
+        elif user_image.startswith("p"):
+            return "pull"
 
 
-while not user_os:
-    user_os = check_os()
+def execute_command(script_type, command):
+    os.system(f"call scripts\\{script_type}\\{command}.bat")
 
 
-print("Old image or new image? ([NEW], old):")
-user_image = input().lower()
+user_script_type = get_user_os()
+user_image = get_user_image()
 
-
-if not user_os:
-    user_os = "windows"
+if not user_script_type:
+    user_script_type = "CMD"
 
 if not user_image:
-    user_image = "new"
+    user_image = "build"
 
-if user_os.startswith("win"):
-    if user_image.startswith("old"):
-        os.system("call scripts\\Windows\\build_and_run_old_image.bat")
-    else:
-        os.system("call scripts\\Windows\\build_and_run.bat")
-elif user_os.startswith("lin"):
-    os.system("bash scripts/Linux/build_and_run.sh")
-elif user_os.startswith("mac"):
-    os.system("bash scripts/Mac/build_and_run.sh")
+execute_command(user_script_type, f"{user_image}_and_run")
