@@ -117,8 +117,6 @@ $heroku create <nom-de-votre-appli>
 
 - Aller sur `https://dashboard.heroku.com/account` et récupérer votre clé API
 
-![alt text](https://ibb.co/HPzvkMS)
-
 HEROKU_APP_NAME
 
 - nom de votre appli

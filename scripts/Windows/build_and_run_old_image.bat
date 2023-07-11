@@ -1,21 +1,30 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableDelayedExpansion
+set i=0
 
-REM Read .env file
-for /f "usebackq tokens=1,* delims==" %%a in (".env") do (
-  if not "%%a" == "" (
-    set "%%a=%%b"
-    echo %%a=%%b
-  )
+for /F "delims=" %%a in (scripts\commit_history.txt) do (
+    set /a i+=1
+    set "tag[!i!]=%%a"
+    echo !i!. %%a
 )
 
-REM Ask for image tag
-set /p image_tag=Enter image tag: 
+echo.
+echo Select a tag by its corresponding number.
 
-echo "Building:" %DOCKER_USERNAME%/%DOCKER_APP_NAME%:%image_tag%
-REM Build Docker image
-docker build -t %DOCKER_USERNAME%/%DOCKER_APP_NAME%:%image_tag% --label commit_hash=%image_tag% --build-arg PORT=8000 .
+set /p image_tag="Tag number: "
+
+REM Validation of the input
+if not defined tag[%image_tag%] (
+    echo Invalid choice
+    exit /b
+) 
+
+set "full_tag=!tag[%image_tag%]!"
+for /f "tokens=2 delims==" %%b in ("!full_tag!") do set "image_tag=%%b"
+
+echo "Pulling:" %DOCKER_USERNAME%/%DOCKER_APP_NAME%:%image_tag%
+REM Pull Docker image
+docker pull %DOCKER_USERNAME%/%DOCKER_APP_NAME%:%image_tag%
 
 REM Run Docker image
 docker run --env-file .env -p 8000:8000 --name %DOCKER_APP_NAME%_container_%image_tag%  %DOCKER_USERNAME%/%DOCKER_APP_NAME%:%image_tag%
-

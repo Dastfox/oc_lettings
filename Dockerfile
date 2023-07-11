@@ -8,11 +8,15 @@ WORKDIR /Python-OC-Lettings-FR
 # Copiez les fichiers de votre projet dans le conteneur
 COPY . /Python-OC-Lettings-FR
 
-ENV PORT=8000
+# port d'écoute de l'application
+ENV PORT=$PORT
+# ensure that the python output is sent straight to terminal (avoid buffering)
 ENV PYTHONUNBUFFERED=1
+# avoid creating .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV DJANGO_SETTINGS_MODULE=oc_lettings_site.settings
+# django secret key
 ENV SECRET_KEY = $SECRET_KEY
+# sentry dsn
 ENV SENTRY_DSN = $SENTRY_DSN
 
 # Installez les dépendances de votre projet
